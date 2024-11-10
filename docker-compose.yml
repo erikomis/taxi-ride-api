@@ -1,0 +1,46 @@
+services:
+  app:
+    build:
+      context: .
+      args:
+        APP_ENV: ${NODE_ENV}
+        NODE_ENV: ${NODE_ENV}
+        PORT: ${PORT}
+    command: ['pnpm', 'start:dev']
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: ${PORT}
+      POSTGRES_URI: postgres://postgres:yourpassword@postgres:5432/api
+      BACKEND_DOMAIN: http://app:${PORT}
+    volumes:
+      - .:/home/node/app
+      # ** Descomente se precisar persistir o node_modules:
+      # - ./node_modules:/home/node/app/node_modules
+    ports:
+      - '${PORT}:${PORT}'
+    depends_on:
+      - postgres
+    networks:
+      - taxi-ride-api
+
+  postgres:
+    image: postgres:alpine
+    restart: always
+    environment:
+      POSTGRES_DB: api
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yourpassword
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/init-db:/docker-entrypoint-initdb.d/
+    networks:
+      - taxi-ride-api
+
+volumes:
+  postgres-data:
+
+networks:
+  taxi-ride-api:
+    driver: bridge
