@@ -96,3 +96,13 @@ docker-compose up --build
 A aplicação estará disponível em http://localhost:PORT
 
 
+### Acesso ao Swagger
+Após iniciar a aplicação, a documentação Swagger estará disponível em:
+
+``` bash
+
+http://localhost:port/api
+
+```
+
+Esse endereço fornece uma interface interativa onde é possível testar os endpoints diretamente e visualizar detalhes das requisições e respostas.
