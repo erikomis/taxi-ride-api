@@ -1,73 +1,98 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# API de Corridas 🚗
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Uma API de gerenciamento de corridas, onde passageiros podem solicitar corridas, motoristas podem aceitar e finalizar essas corridas, e o status da corrida é atualizado conforme o progresso.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Funcionalidades
 
-## Description
+- **Cadastro de Passageiros e Motoristas**
+- **Solicitação de Corrida**: Passageiros podem solicitar corridas, que inicialmente ficam com o status "Aguardando Motorista".
+- **Atualização de Status da Corrida**:
+  - "Em Andamento" (quando um motorista aceita a corrida)
+  - "Finalizada" (quando a corrida é concluída)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Tecnologias
 
-## Installation
+- **NestJS** - Estrutura principal para construir a API
+- **Node.js** - Ambiente de execução do JavaScript
+- **PostgreSQL** - Banco de dados relacional
+- **Docker** - Contêinerização da aplicação
+- **Docker Compose** - Gerenciamento de múltiplos contêineres
 
-```bash
-$ npm install
+## Endpoints
+
+| Método | Endpoint      | Descrição                                  |
+|--------|---------------|--------------------------------------------|
+| POST   | /passengers   | Cadastrar um passageiro                    |
+| POST   | /drivers      | Cadastrar um motorista                     |
+| POST   | /rides        | Criar uma nova corrida                     |
+| PATCH  | /rides        | Atualizar o status de uma corrida          |
+| GET    | /rides/:id    | Listar uma corrida por ID                  |
+
+### Regras Básicas de Negócio
+
+- **Criação de Corrida**: Uma corrida só pode ser criada se o passageiro existir.
+- **Atualização de Status**:
+  - Alterar o status para "Em andamento" é permitido apenas se a corrida estiver em "Aguardando Motorista" e o ID do motorista for informado.
+  - Alterar o status para "Finalizada" é permitido apenas se a corrida estiver em "Em Andamento".
+
+### Exemplo de Fluxo
+
+1. Um passageiro é cadastrado.
+2. Um motorista é cadastrado.
+3. O passageiro solicita uma corrida.
+4. O motorista inicia a corrida e a finaliza.
+
+## Estrutura do Projeto
+
+
+
+## Configuração
+
+### Pré-requisitos
+
+- Docker e Docker Compose instalados
+- Node.js e npm instalados
+
+### Configuração do Banco de Dados
+
+Certifique-se de que as configurações do banco de dados no `docker-compose.yml` e `typeorm-config.service.ts` estejam corretas.
+
+### Variáveis de Ambiente
+
+Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
+
+```plaintext
+NODE_ENV=development
+
+# Application port
+PORT=7272
+
+TYPEORM_LOG=false
+TYPEORM_SYNC=true
+
+
+APP_NAME="api-de-corridas-de-taxi"
+APP_SECRET="16307327-e2e8-4808-9eb3-a5a14170f3cd"
+APP_URL="http://localhost:7272"
+
+
+THROTTLE_LIMIT=800
+
+
+POSTGRES_URI="postgres://postgres:yourpassword@localhost:5432/api"
+
 ```
 
-## Running the app
+
+## Execução
+
+### Inicialização com Docker
+
+Para construir e executar os contêineres, utilize o comando:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+docker-compose up --build
 ```
+A aplicação estará disponível em http://localhost:PORT
 
-## Test
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
